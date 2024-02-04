@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: azainabi <azainabi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/24 03:18:41 by azainabi          #+#    #+#             */
-/*   Updated: 2023/11/27 14:37:28 by azainabi         ###   ########.fr       */
+/*   Updated: 2023/11/27 14:35:17 by azainabi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 static void	join_and_free(char **buffer, char *readed)
 {
@@ -105,22 +105,22 @@ static char	*delete_newline(char *buffer)
 
 char	*get_next_line(int fd)
 {
-	static char	*buffer = NULL;
+	static char	*buffer[OPEN_MAX] = {NULL};
 	char		*line;
 
 	line = NULL;
 	if (fd < 0 || BUFFER_SIZE <= 0 || BUFFER_SIZE >= INT_MAX)
 		return (NULL);
-	buffer = read_from_line(buffer, fd);
-	if (!buffer)
+	buffer[fd] = read_from_line(buffer[fd], fd);
+	if (!buffer[fd])
 		return (NULL);
-	line = add_to_line(buffer);
-	buffer = delete_newline(buffer);
-	if (line[0] == '\0' && buffer[0] == '\0')
+	line = add_to_line(buffer[fd]);
+	buffer[fd] = delete_newline(buffer[fd]);
+	if (line[0] == '\0' && buffer[fd][0] == '\0')
 	{
 		free(line);
-		free(buffer);
-		buffer = NULL;
+		free(buffer[fd]);
+		buffer[fd] = NULL;
 		return (NULL);
 	}
 	return (line);
